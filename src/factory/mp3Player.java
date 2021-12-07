@@ -7,6 +7,7 @@ import java.util.*;
 import javax.sound.sampled.*;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
+import javax.swing.JScrollPane;
 import javax.swing.JSlider;
 
 import org.tritonus.share.sampled.TAudioFormat;
@@ -266,8 +267,10 @@ public class mp3Player {
 			artWorkPanel.setIcon(new ImageIcon(changedImg));
 			
 			/* 가사 정보를 설정합니다. */
-			JLabel lycris = (JLabel)mainFrame.getComponentByName("LYRICS_PANEL");
-			lycris.setText(tag.getLyrics());
+			JScrollPane lyrics = (JScrollPane)mainFrame.getComponentByName("LYRICS_PANEL");
+			JLabel lyricsLbl = new JLabel(tag.getLyrics());
+			lyrics.setViewportView(lyricsLbl);
+			
 			
 			/* 노래 제목을 설정합니다. */
 			JLabel nameLabel = (JLabel)mainFrame.getComponentByName("MUSIC_NAME_PANE");

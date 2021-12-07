@@ -29,8 +29,7 @@ public class mp3Tagger {
 			musicName =  tag.getFirst(FieldKey.TITLE);
 			artist = tag.getFirst(FieldKey.ARTIST);
 			lyrics = tag.getFirst(FieldKey.LYRICS);
-			lyrics = "<html><body style='text-align:center;'>" + lyrics + "</body></html>";
-			//lyrics.replaceAll(System.getProperty("line.separator"), "<br/>");
+			lyrics = "<html><body style='text-align:center;'><div style=\"width:90px; font-size:8px;\">" + lyrics + "</div></body></html>";
 			lyrics = lyrics.replaceAll("(\r\n|\r|\n|\n\r)", "<br/>");
 			artWork = tag.getFirstArtwork();			
 		} catch (Exception e) {

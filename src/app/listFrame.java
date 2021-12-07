@@ -21,6 +21,7 @@ public class listFrame extends JPanel{
 		JPanel listPanel = new JPanel();
 		model = new playListModel();
 		musicList = new JList<playListModel>(model);
+		musicList.setVisibleRowCount(100);
 		musicList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);		// 하나만 선택 가능하도록 설정합니다.
 		
 		musicList.setFixedCellHeight(25);
@@ -33,12 +34,16 @@ public class listFrame extends JPanel{
 		
 		/* Disk에서 파일을 선택해서 PlayList에 추가하는 Action 지정 */
 		JButton loadFBtn = new JButton("open");										
+		loadFBtn.setBounds(169, 6, 75, 29);
 		loadFBtn.addMouseListener(new listFrameAction.playListFromDiskListener());
 		
 		/* PLAY_LIST에 스크롤을 추가합니다 */
 		JScrollPane listScroll = new JScrollPane(musicList);
+		listScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		listScroll.setBounds(0, 39, 250, 326);
 		listScroll.setBackground(Color.LIGHT_GRAY);
 		listScroll.setPreferredSize(new Dimension(250, 500));
+		listPanel.setLayout(null);
 		
 		listPanel.add(loadFBtn);
 		listPanel.add(listScroll);
@@ -68,8 +73,6 @@ public class listFrame extends JPanel{
 		}
 		model.removeElementAt(index);
 	}
-	
-	
 	
 	/* List에 항목을 추가합니다. (musicInfoBean) */
 	public void addList(musicInfoBean musicData) {

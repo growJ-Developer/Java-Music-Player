@@ -6,6 +6,9 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.Random;
 
 import javax.swing.JButton;
 import javax.swing.JSlider;
@@ -14,13 +17,14 @@ import javax.swing.event.ChangeListener;
 
 import app.listFrame;
 import app.mainFrame;
+import app.optionFrame;
+import app.optionFrame.*;
 import app.playFrame;
 import bean.musicInfoBean;
 import factory.mp3Player;
 
 public class playFrameAction {
-	
-	
+	/* 이전 곡 재생 버튼 클릭 시 */ 
 	public static class prevBtnAction extends MouseAdapter{
 		@Override
 		public void mousePressed(MouseEvent e) {
@@ -47,26 +51,50 @@ public class playFrameAction {
 			/* PLAY_PANEL을 받아옵니다 */
 			playFrame playFrm = (playFrame) mainFrame.getComponentByName("PLAY_PANEL");
 			
-			musicInfoBean data = listFrm.getList(0);
-			File file = new File(data.getFilePath());
-			
-			/* 사이클 설정에 따라서 재생을 설정합니다 */
-			int cycle = playFrm.getCycleInfo();
-			switch (cycle) {
-			case 3:	// 전체 곡 반복 재생인 경우, 다음으로 목록을 넘깁니다. 
-				mp3Player.getInstance().play(file);
-				listFrm.removeList(0, true);
-				listFrm.addList(data);
-				break;
-			default:	// 반복 재생이 아니거나, 한곡만 반복 재생인 경우 재생한 List를 삭제합니다.
-				mp3Player.getInstance().play(file);
-				listFrm.removeList(0, true);
-				break;
+			if(listFrm.getListSize() == 0) {
+				optionFrame.alertMessageDialog("재생 목록이 없습니다.");
+			} else {
+				musicInfoBean data = listFrm.getList(0);
+				File file = new File(data.getFilePath());
+				
+				/* 사이클 설정에 따라서 재생을 설정합니다 */
+				int cycle = playFrm.getCycleInfo();
+				switch (cycle) {
+				case 3:	// 전체 곡 반복 재생인 경우, 다음으로 목록을 넘깁니다. 
+					mp3Player.getInstance().play(file);
+					listFrm.removeList(0, true);
+					listFrm.addList(data);
+					break;
+				default:	// 반복 재생이 아니거나, 한곡만 반복 재생인 경우 재생한 List를 삭제합니다.
+					mp3Player.getInstance().play(file);
+					listFrm.removeList(0, true);
+					break;
+				}
+				playFrm.nextPlay();
 			}
-			playFrm.nextPlay();
 		}
 	}
 	
+	/* 랜덤 재생 버튼 클릭 시 */
+	public static class randomBtnAction extends MouseAdapter{
+		@Override
+		public void mousePressed(MouseEvent e) {
+			LinkedList<musicInfoBean> musicList = new LinkedList<musicInfoBean>();
+			/* PLAY_LIST를 받아옵니다 */
+			listFrame listFrm = (listFrame) mainFrame.getComponentByName("LIST_PANEL");
+			for (int i = 0; i < listFrm.getListSize(); i++) {
+				musicList.add(listFrm.getList(i));
+				listFrm.removeList(i, false);
+			}
+			Collections.shuffle(musicList);
+			
+			for(musicInfoBean data : musicList) {
+				listFrm.addList(data);
+			}
+		}
+	}	
+	
+	/* 사이클 버튼 클릭 Action */
 	public static class cycleBtnAction extends MouseAdapter{
 		@Override
 		public void mousePressed(MouseEvent e) {
@@ -97,6 +125,7 @@ public class playFrameAction {
 		}
 	}
 
+	/* 토글(재생) 버튼 Action */
 	public static class toggleBtnAction extends MouseAdapter{
 		@Override
 		public void mousePressed(MouseEvent e) {
@@ -106,17 +135,21 @@ public class playFrameAction {
 				/* 재생 중인 음악이 없을 경우 PlayList에서 첫번째 항목을 받아서 재생합니다 */
 				listFrame listFrm = (listFrame) mainFrame.getComponentByName("LIST_PANEL");
 				playFrame playFrm = (playFrame) mainFrame.getComponentByName("PLAY_PANEL");
-				musicInfoBean data = listFrm.getList(0);
-				int cycle = playFrm.getCycleInfo();
-				switch (cycle) {
-				case 1:
-					File file = new File(data.getFilePath());
-					mp3Player.getInstance().play(file);
-					listFrm.removeList(0, true);
-					break;
-				default:
-					playFrm.nextPlay();
-					break;
+				if(listFrm.getListSize() == 0) {
+					optionFrame.alertMessageDialog("재생 목록이 없습니다.");
+				} else {
+					musicInfoBean data = listFrm.getList(0);
+					int cycle = playFrm.getCycleInfo();
+					switch (cycle) {
+					case 1:
+						File file = new File(data.getFilePath());
+						mp3Player.getInstance().play(file);
+						listFrm.removeList(0, true);
+						break;
+					default:
+						playFrm.nextPlay();
+						break;
+					}
 				}
 			}
 			if(mp3Player.getInstance().getIsRunning()) {
@@ -127,6 +160,7 @@ public class playFrameAction {
 		}
 	}
 	
+	/* timeLine Action */
 	public static class timeLineAction extends MouseAdapter{
 		/* 마우스 드래그가 행해지는 시점에 설정 변경 */
 		@Override
@@ -157,6 +191,22 @@ public class playFrameAction {
 			JSlider volumeControl = (JSlider) e.getSource();
 			mp3Player.getInstance().setVolume(volumeControl.getValue());
 			mp3Player.getInstance().setVolumeDragging(false);
+		}
+	}
+	
+	/* 음소버 버튼에 대한 Action */
+	public static class muteAction extends MouseAdapter{
+		@Override
+		public void mousePressed(MouseEvent e) {
+			mp3Player.getInstance().setVolume(0);
+		}
+	}
+	
+	/* 음량 최대 버튼에 대한 Action */
+	public static class speakerAction extends MouseAdapter{
+		@Override
+		public void mousePressed(MouseEvent e) {
+			mp3Player.getInstance().setVolume(100);
 		}
 	}
 }

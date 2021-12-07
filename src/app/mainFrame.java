@@ -35,33 +35,26 @@ public class mainFrame extends JFrame{
 	public void setNorthPanel(Container container) {
 		playFrame playFrm = new playFrame();
 		playFrm.setName("PLAY_PANEL");
+		
 		container.add(playFrm, BorderLayout.NORTH);
 	}
 	
 	/* 중앙 패널에 대해 설정합니다. */
 	public void setCenterPanel(Container container) {
+		centerFrame centerFrm = new centerFrame();
+		centerFrm.setName("CENTER_PANEL");
+		
+		container.add(centerFrm, BorderLayout.CENTER);
 		
 	}
 	
 	/* 좌측 패널에 대해 설정합니다. */
 	public void setWestPanel(Container container) {
-		JPanel westPanel = new JPanel();
-		
-		/* 제어 버튼을 생성합니다. */
-		JButton chartBtn = new JButton("Music Chart");				// Music Chart 버튼 
-		JButton favoriteBtn = new JButton("Favorite Music");		// Favorite Music 버튼
-		JButton usersBtn = new JButton("Users");						// Users 버튼
-		
-		/* 각 버튼에 대한 Action을 지정합니다. 버튼 클릭시, MainFrame의 Center에 알맞는 창을 출력합니다. */
-		
-		
-		/* 버튼을 패널에 추가합니다. */
-		westPanel.add(chartBtn);
-		westPanel.add(favoriteBtn);
-		westPanel.add(usersBtn);
+		menuFrame menuFrm = new  menuFrame();
+		menuFrm.setName("MENU_PANEL");
 		
 		/* West Control Panel을 conatiner에 추가합니다 */
-		container.add(westPanel, BorderLayout.WEST);
+		container.add(menuFrm, BorderLayout.WEST);
 	}
 	
 	/* 우측 패널에 대해 설정합니다. */
