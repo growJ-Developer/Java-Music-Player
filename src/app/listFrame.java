@@ -1,7 +1,9 @@
 package app;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Point;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -10,14 +12,19 @@ import javax.swing.*;
 
 import action.listFrameAction;
 import bean.musicInfoBean;
+import components.StripeRenderer;
 import factory.mp3Tagger;
 import model.playListModel;
+import java.awt.FlowLayout;
 
 public class listFrame extends JPanel{
 	private playListModel model;
 	private JList<playListModel> musicList;
 		
 	public listFrame() {
+		FlowLayout flowLayout = (FlowLayout) getLayout();
+		flowLayout.setVgap(0);
+		flowLayout.setHgap(0);
 		JPanel listPanel = new JPanel();
 		model = new playListModel();
 		musicList = new JList<playListModel>(model);
@@ -26,11 +33,33 @@ public class listFrame extends JPanel{
 		
 		musicList.setFixedCellHeight(25);
 		musicList.setFixedCellWidth(250);
-		musicList.setBackground(Color.LIGHT_GRAY);
+		musicList.setBackground(new Color(238, 238, 238));
+		musicList.setCellRenderer(new StripeRenderer());
 		
 		/* 플레이리스트에 대한 Action을 지정 */
 		musicList.addMouseListener(new listFrameAction.playListActionListener());
 		musicList.setName("PLAY_LIST");
+		musicList.setBorder(null);
+		
+		/* 플레이리스트에 대한 PopupMenu 지정 */
+		JPopupMenu musicMenu = new JPopupMenu() {
+			@Override
+			public void show(Component invoker, int x, int y) {
+				int row = musicList.locationToIndex(new Point(x, y));
+				if(row != -1 && row < model.getListSize()) {
+					musicList.setSelectedIndex(row);
+					super.show(invoker, x, y);
+				}
+			}
+		};
+		musicList.setComponentPopupMenu(musicMenu);
+		JMenuItem playMenuItem = new JMenuItem("재생");
+		playMenuItem.addActionListener(new listFrameAction.playMenuItemActionListener());
+		JMenuItem delMenuItem = new JMenuItem("삭제");
+		delMenuItem.addActionListener(new listFrameAction.delMeuItemActionListener());
+		musicMenu.add(playMenuItem);
+		musicMenu.add(delMenuItem);
+		
 		
 		/* Disk에서 파일을 선택해서 PlayList에 추가하는 Action 지정 */
 		JButton loadFBtn = new JButton("open");										
@@ -41,8 +70,9 @@ public class listFrame extends JPanel{
 		JScrollPane listScroll = new JScrollPane(musicList);
 		listScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		listScroll.setBounds(0, 39, 250, 326);
-		listScroll.setBackground(Color.LIGHT_GRAY);
+		listScroll.setBackground(new Color(238, 238, 238));
 		listScroll.setPreferredSize(new Dimension(250, 500));
+		listScroll.setBorder(null);
 		listPanel.setLayout(null);
 		
 		listPanel.add(loadFBtn);
@@ -101,6 +131,6 @@ public class listFrame extends JPanel{
 	}
 	
 	public int getListSize() {
-		return model.getSize();		
+		return model.getListSize();		
 	}
 }

@@ -1,5 +1,7 @@
 package action;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
@@ -43,7 +45,7 @@ public class listFrameAction {
 				int location = list.locationToIndex(e.getPoint());						// 선택 요소 항목 계산
 				
 				listFrame listFrm = (listFrame) mainFrame.getComponentByName("LIST_PANEL");
-				if(location <= listFrm.getListSize()) {
+				if(location < listFrm.getListSize()) {
 					musicInfoBean data = listFrm.getList(location);
 					/* 선택한 음악을 재생합니다 */
 					mp3Player.getInstance().play(data.getFilePath());		
@@ -55,6 +57,41 @@ public class listFrameAction {
 						listFrm.addList(listData);
 					}
 				}
+			}
+		}
+	}
+	
+	/* musicMenu - 재생 Action */
+	public static class playMenuItemActionListener implements ActionListener{
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			/* 선택 요소 반환 */
+			JList<playListModel> musicList = (JList<playListModel>) mainFrame.getComponentByName("PLAY_LIST");
+			listFrame listFrm = (listFrame) mainFrame.getComponentByName("LIST_PANEL");
+			int selIndex = musicList.getSelectedIndex();
+			if(selIndex < listFrm.getListSize()) {
+				/* 요소를 맨 처음으로 이동시킵니다. */
+				musicInfoBean data = listFrm.getList(selIndex);
+				listFrm.removeList(selIndex, false);
+				listFrm.addListAt(0, data);
+				
+				/* 첫번째 곡을 재생합니다 */
+				playFrameAction.playFisrt();
+			}	
+		}
+	}
+	
+	/* musicMenu - 삭제 Action */
+	public static class delMeuItemActionListener implements ActionListener{
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			/* 선택 요소 반환 */
+			JList<playListModel> musicList = (JList<playListModel>) mainFrame.getComponentByName("PLAY_LIST");
+			listFrame listFrm = (listFrame) mainFrame.getComponentByName("LIST_PANEL");
+			int selIndex = musicList.getSelectedIndex();
+			
+			if(selIndex < listFrm.getListSize()) {
+				listFrm.removeList(selIndex, false);
 			}
 		}
 	}

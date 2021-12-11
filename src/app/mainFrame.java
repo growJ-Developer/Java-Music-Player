@@ -4,6 +4,8 @@ import java.awt.*;
 import java.util.*;
 
 import javax.swing.*;
+import javax.swing.border.Border;
+import javax.swing.border.LineBorder;
 
 import bean.*;
 
@@ -17,6 +19,7 @@ public class mainFrame extends JFrame{
 	public mainFrame() {
 		setTitle("J Music Player");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);			// 닫기 동작 시 프로그램 전체를 종료합니다.
+		setMinimumSize(new Dimension(1024, 512));
 		Container container = getContentPane();
 		
 		container.setLayout(new BorderLayout());
@@ -35,6 +38,8 @@ public class mainFrame extends JFrame{
 	public void setNorthPanel(Container container) {
 		playFrame playFrm = new playFrame();
 		playFrm.setName("PLAY_PANEL");
+		LineBorder lineBorder = new LineBorder(Color.lightGray);
+		playFrm.setBorder(lineBorder);
 		
 		container.add(playFrm, BorderLayout.NORTH);
 	}
@@ -61,6 +66,7 @@ public class mainFrame extends JFrame{
 	public void setEastPanel(Container container) {
 		listFrame listFrm = new listFrame();
 		listFrm.setName("LIST_PANEL");
+		
 		container.add(listFrm, BorderLayout.EAST);
 	}
 	

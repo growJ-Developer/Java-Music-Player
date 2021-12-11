@@ -20,6 +20,8 @@ public class mp3Tagger {
 	private String artist;
 	private String lyrics;
 	private Artwork artWork;
+	private String filePath;
+	private String fileName;
 	
 	public mp3Tagger(File file) {		
 		/* 음악 파일에 대한 헤더를 불러옵니다. */
@@ -31,7 +33,9 @@ public class mp3Tagger {
 			lyrics = tag.getFirst(FieldKey.LYRICS);
 			lyrics = "<html><body style='text-align:center;'><div style=\"width:90px; font-size:8px;\">" + lyrics + "</div></body></html>";
 			lyrics = lyrics.replaceAll("(\r\n|\r|\n|\n\r)", "<br/>");
-			artWork = tag.getFirstArtwork();			
+			artWork = tag.getFirstArtwork();
+			filePath = file.getPath();
+			fileName = file.getName();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -43,6 +47,8 @@ public class mp3Tagger {
 		data.setArtist(artist);
 		data.setLyrics(lyrics);
 		data.setArtWork(getArtWorkBinary());
+		data.setFileName(fileName);
+		data.setFilePath(filePath);
 		return data;
 	}
 	
@@ -102,5 +108,17 @@ public class mp3Tagger {
 		this.artWork = artWork;
 	}
 
+	public String getFileName() {
+		return fileName;
+	}
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
+	}
+	public String getFilePath() {
+		return filePath;
+	}
+	public void setFilePath(String filePath) {
+		this.filePath = filePath;
+	}
 	
 }

@@ -1,11 +1,13 @@
 package factory;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Image;
 import java.io.*;
 import java.util.*;
 import javax.sound.sampled.*;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JSlider;
@@ -15,7 +17,10 @@ import org.tritonus.share.sampled.file.TAudioFileFormat;
 
 import app.mainFrame;
 import app.playFrame;
+import bean.musicInfoBean;
 import javazoom.spi.mpeg.sampled.convert.DecodedMpegAudioInputStream;
+import jiconfont.icons.google_material_design_icons.GoogleMaterialDesignIcons;
+import jiconfont.swing.IconFontSwing;
 
 
 public class mp3Player {
@@ -60,7 +65,10 @@ public class mp3Player {
 		mThread = new Thread(()->{
 			try {
 				mFile = file;
-				setInputStream();						// InputStream 생성 
+				setInputStream();						// InputStream 생성
+				/* 플레이 기록 설정 */
+				recordPlay();
+				/* 플레이 */
 				rawPlay();
 			} catch (Exception e) {
 				/* 음악 재생에 있어서 오류가 있을 경우 실행됩니다. */
@@ -121,8 +129,10 @@ public class mp3Player {
 		
 		if(line != null) {
 			line.open();
-			line.start();																	// line start 
+			line.start();																		// line start 
 			int nBytesRead = 0, nByteWritten = 0;
+			/* 재생 버튼 로딩 */
+			JButton toggleBtn = (JButton) mainFrame.getComponentByName("TOGGLE_BTN");
 			
 			gainControl = (FloatControl) line.getControl(FloatControl.Type.MASTER_GAIN);
 			JSlider volumeControl = (JSlider) mainFrame.getComponentByName("VOLUME_CONTROL");
@@ -131,26 +141,26 @@ public class mp3Player {
 			
 			gainControl.setValue(percentToVolume(min, max, volumeControl.getValue()));
 			
-			while(nBytesRead != -1) {												// 파일 전체 재생 여부 체크
+			while(nBytesRead != -1) {													// 파일 전체 재생 여부 체크
 				/* 재생 중지 시 (isRunning이 false 일 경우) */
 				while(!isRunning) {														// 재생 중지 설정 시, thread 중단  
 					try {
-						synchronized (mThread) {									// 쓰레드 중지 
-							System.out.println(mThread.getName() + " calling thread.wait!");
-							mThread.wait();
+						synchronized (mThread) {									// 쓰레드 중지
+							/* 재생이 중지되면 PLAY 아이콘으로 변경합니다 */
+							toggleBtn.setIcon(IconFontSwing.buildIcon(GoogleMaterialDesignIcons.PLAY_CIRCLE_FILLED, 40, new Color(94, 94, 94)));
+							
+							mThread.wait();							
 						}
 					} catch (InterruptedException e) {
 						Thread.currentThread().interrupt();
-						System.out.println("Thread interrupted"); 
 					}
 				}
 				/*  재생 위치를 조정 시 (isDragging이 true일 경우) */
 				while(isDragging) {
 					try {
 						synchronized (mThread) {									// 드래그를 하는 동안,
-							mThread.sleep(500);										// 0.5초(500ms) 쓰레드 작동 중지
+							mThread.sleep(500);											// 0.5초(500ms) 쓰레드 작동 중지
 							isDragging = false;											// 드래그 여부 초기화
-							
 							//MP3 타입의 파일일 경우, 변경한 위치에 대한 계산을 수행합니다.
 							if(oStream instanceof DecodedMpegAudioInputStream) {
 								try {
@@ -183,6 +193,9 @@ public class mp3Player {
 					setCurrentSeconds(toSeconds((Long)property.get("mp3.position.microseconds")));
 					
 					if(!isDragging) {
+						/* 재생이 중지되면 PLAY 아이콘으로 변경합니다 */
+						toggleBtn.setIcon(IconFontSwing.buildIcon(GoogleMaterialDesignIcons.PAUSE_CIRCLE_OUTLINE, 40, new Color(94, 94, 94)));
+						
 						/* 컨트롤 패널의 현재 재생 시간을 설정합니다 */
 						JSlider timeLine = (JSlider)mainFrame.getComponentByName("TIME_LINE");
 						timeLine.setValue(getCurrentSeconds());			
@@ -256,7 +269,6 @@ public class mp3Player {
 			timeSecMax.setText(timeToDisplay(getDurationInSeconds()));
 			
 			mp3Tagger tag = new mp3Tagger(file);
-			System.out.println("nowPlay : " + tag.getMusicName());
 			/* 앨범 커버를 설정합니다. */
 			JLabel artWorkPanel = (JLabel)mainFrame.getComponentByName("ART_WORK_PANEL");
 			
@@ -271,7 +283,6 @@ public class mp3Player {
 			JLabel lyricsLbl = new JLabel(tag.getLyrics());
 			lyrics.setViewportView(lyricsLbl);
 			
-			
 			/* 노래 제목을 설정합니다. */
 			JLabel nameLabel = (JLabel)mainFrame.getComponentByName("MUSIC_NAME_PANE");
 			nameLabel.setText(tag.getMusicName());
@@ -282,12 +293,22 @@ public class mp3Player {
 		}
 	}
 	
+	/* 플레이 기록을 기록합니다 */
+	public void recordPlay() {
+		/* 현재 재생중인 곡의 정보를 받아옵니다 */
+		mp3Tagger tag = new mp3Tagger(mFile);
+		musicInfoBean data = tag.getMp3Tag();
+		serviceDAO dao = new serviceDAO();
+		dao.recordPlayInfo(data);
+	}
+	
 	/* 쓰레드의 전환을 진행합니다. */
 	public void toggle() {
 		if(mThread != null && mThread.isAlive()) {
 			if(isRunning == false) {
 				try {
 					synchronized (mThread) {
+						System.out.println(Thread.currentThread().getName() + " notify");
 							mThread.notify();
 					}
 				} catch (Exception e) {

@@ -1,5 +1,6 @@
 package action;
 
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -22,28 +23,42 @@ import app.optionFrame.*;
 import app.playFrame;
 import bean.musicInfoBean;
 import factory.mp3Player;
+import jiconfont.icons.google_material_design_icons.GoogleMaterialDesignIcons;
+import jiconfont.swing.IconFontSwing;
 
 public class playFrameAction {
 	/* 이전 곡 재생 버튼 클릭 시 */ 
 	public static class prevBtnAction extends MouseAdapter{
 		@Override
 		public void mousePressed(MouseEvent e) {
+			/* PLAY_PANEL을 받아옵니다 */
+			playFrame playFrm = (playFrame) mainFrame.getComponentByName("PLAY_PANEL");
 			/* PLAY_LIST를 받아옵니다 */
 			listFrame listFrm = (listFrame) mainFrame.getComponentByName("LIST_PANEL");
 			/* PREV_PLAY_LIST를 받아옵니다 */
 			ArrayList<musicInfoBean> prevList = mainFrame.prevList;
 			if(prevList.size() > 1) {
-				musicInfoBean prevData = prevList.get(prevList.size() - 2);
+				/* 사이클 설정에 따라서 재생을 설정합니다 */
+				int cycle = playFrm.getCycleInfo();
+				
+				musicInfoBean prevData = prevList.get(prevList.size() - 1);
 				/* 리스트의 최상위에 추가한 뒤에 prevList에서 삭제합니다 */
-				listFrm.addListAt(0, prevData);		
+				listFrm.addListAt(0,  prevList.get(prevList.size() - 1));				// 현재 재생 중인 곡 
 				prevList.remove(prevList.size() - 1);
-				mp3Player.getInstance().play(new File(prevData.getFilePath()));
+				listFrm.addListAt(0,  prevList.get(prevList.size() - 1));				// 이전에 재생한 곡		
+				prevList.remove(prevList.size() - 1);
+				
+				musicInfoBean data = listFrm.getList(0);
+				File file = new File(data.getFilePath());
+
+				mp3Player.getInstance().play(file);
+				listFrm.removeList(0, true);
 			}
 		}
 	}
 	
 	/* 다음 곡 재생 버튼 클릭 시 */
-	public static class nextBtnAction extends MouseAdapter{
+	public static class nextBtnAction extends MouseAdapter{		
 		@Override
 		public void mousePressed(MouseEvent e) {
 			/* PLAY_LIST를 받아옵니다 */
@@ -70,7 +85,6 @@ public class playFrameAction {
 					listFrm.removeList(0, true);
 					break;
 				}
-				playFrm.nextPlay();
 			}
 		}
 	}
@@ -103,21 +117,21 @@ public class playFrameAction {
 			int cycle = playFrm.getCycleInfo();
 			
 			switch (cycle) {
-			case 0:
+			case 0:														// 한곡만 재생 -> 전체 재생  
 				playFrm.setCycleInfo(1);
-				cycleBtn.setText("1");
+				cycleBtn.setIcon(IconFontSwing.buildIcon(GoogleMaterialDesignIcons.REPEAT, 20, new Color(128, 128, 128)));
 				break;
-			case 1:
+			case 1:														// 전체 재생 -> 전체 반복 재생 
 				playFrm.setCycleInfo(2);
-				cycleBtn.setText("2");
+				cycleBtn.setIcon(IconFontSwing.buildIcon(GoogleMaterialDesignIcons.REPEAT, 20, new Color(252, 49, 89)));
 				break;
-			case 2:
+			case 2:														// 전체 반복 재생 -> 한곡 반복 재생 
 				playFrm.setCycleInfo(3);
-				cycleBtn.setText("3");
+				cycleBtn.setIcon(IconFontSwing.buildIcon(GoogleMaterialDesignIcons.REPEAT_ONE, 20, new Color(252, 49, 89)));
 				break;
-			case 3:
+			case 3:														 // 한곡 반복 재생 -> 한곡만 재생 
 				playFrm.setCycleInfo(0);
-				cycleBtn.setText("0");
+				cycleBtn.setIcon(IconFontSwing.buildIcon(GoogleMaterialDesignIcons.LOOKS_ONE, 20, new Color(128, 128, 128)));
 				break;
 			default:
 				break;
@@ -133,29 +147,28 @@ public class playFrameAction {
 			mp3Player.getInstance().toggle();
 			if (mp3Player.getInstance().getAllBytes() == null) {
 				/* 재생 중인 음악이 없을 경우 PlayList에서 첫번째 항목을 받아서 재생합니다 */
-				listFrame listFrm = (listFrame) mainFrame.getComponentByName("LIST_PANEL");
-				playFrame playFrm = (playFrame) mainFrame.getComponentByName("PLAY_PANEL");
-				if(listFrm.getListSize() == 0) {
-					optionFrame.alertMessageDialog("재생 목록이 없습니다.");
-				} else {
-					musicInfoBean data = listFrm.getList(0);
-					int cycle = playFrm.getCycleInfo();
-					switch (cycle) {
-					case 1:
-						File file = new File(data.getFilePath());
-						mp3Player.getInstance().play(file);
-						listFrm.removeList(0, true);
-						break;
-					default:
-						playFrm.nextPlay();
-						break;
-					}
-				}
+				playFisrt();
 			}
-			if(mp3Player.getInstance().getIsRunning()) {
-				target.setText("||");
-			} else {
-				target.setText(">");
+		}
+	}
+	
+	public static void playFisrt() {
+		listFrame listFrm = (listFrame) mainFrame.getComponentByName("LIST_PANEL");
+		playFrame playFrm = (playFrame) mainFrame.getComponentByName("PLAY_PANEL");
+		if(listFrm.getListSize() == 0) {
+			optionFrame.alertMessageDialog("재생 목록이 없습니다.");
+		} else {
+			musicInfoBean data = listFrm.getList(0);
+			int cycle = playFrm.getCycleInfo();
+			switch (cycle) {
+			case 0:
+				File file = new File(data.getFilePath());
+				mp3Player.getInstance().play(file);
+				listFrm.removeList(0, true);
+				break;
+			default:
+				playFrm.nextPlay();
+				break;
 			}
 		}
 	}
