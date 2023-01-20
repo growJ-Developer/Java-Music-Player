@@ -16,11 +16,8 @@ import javax.swing.JSlider;
 import javax.swing.SwingConstants;
 import javax.swing.text.html.ImageView;
 
-import org.graalvm.compiler.nodes.java.NewMultiArrayNode;
-
 import action.playFrameAction;
 import bean.musicInfoBean;
-import factory.iconManager;
 import factory.mp3Player;
 import jiconfont.icons.google_material_design_icons.GoogleMaterialDesignIcons;
 import jiconfont.swing.IconFontSwing;
@@ -57,6 +54,7 @@ public class playFrame extends JPanel{
 		cycleBtn.setBorderPainted(false);
 		cycleBtn.setHorizontalAlignment(SwingConstants.CENTER);
 		cycleBtn.addMouseListener(new playFrameAction.cycleBtnAction());
+		cycleBtn.setBackground(Color.white);
 		
 		/* 이전 곡 재생 버튼을 설정합니다 */
 		JButton prevBtn = new JButton();
@@ -65,6 +63,7 @@ public class playFrame extends JPanel{
 		prevBtn.setBorderPainted(false);
 		prevBtn.setIcon(IconFontSwing.buildIcon(GoogleMaterialDesignIcons.SKIP_PREVIOUS, 30, new Color(128, 128, 128)));
 		prevBtn.setHorizontalAlignment(SwingConstants.CENTER);
+		prevBtn.setBackground(Color.white);
 		
 		/* 다음 곡 재생 버튼을 설정합니다 */
 		JButton nextBtn = new JButton();
@@ -73,6 +72,7 @@ public class playFrame extends JPanel{
 		nextBtn.setBorderPainted(false);
 		nextBtn.setIcon(IconFontSwing.buildIcon(GoogleMaterialDesignIcons.SKIP_NEXT, 30, new Color(128, 128, 128)));
 		nextBtn.setHorizontalAlignment(SwingConstants.CENTER);
+		nextBtn.setBackground(Color.white);
 		
 		/* 재생/정지 버튼을 설정합니다. */
 		JButton toogleBtn = new JButton();
@@ -82,6 +82,7 @@ public class playFrame extends JPanel{
 		toogleBtn.setIcon(IconFontSwing.buildIcon(GoogleMaterialDesignIcons.PLAY_CIRCLE_OUTLINE, 40, new Color(94, 94, 94)));
 		toogleBtn.setHorizontalAlignment(SwingConstants.CENTER);
 		toogleBtn.setName("TOGGLE_BTN");
+		toogleBtn.setBackground(Color.white);
 		
 		
 		/* 볼륨 컨트롤을 위한 슬라이더 */
@@ -90,12 +91,14 @@ public class playFrame extends JPanel{
 		volumeSlider.setValue(100);
 		volumeSlider.addMouseListener(new playFrameAction.volumeAction());
 		volumeSlider.setName("VOLUME_CONTROL");
+		volumeSlider.setBackground(Color.white);
 		
 		/* 재생 Timeline을 위한 슬라이더 */
 		JSlider timeLine = new JSlider(0, 0, 100, 0);
 		timeLine.setBounds(376, 70, 400, 20);
 		timeLine.setName("TIME_LINE");
 		timeLine.addMouseListener(new playFrameAction.timeLineAction());
+		timeLine.setBackground(Color.white);
 		
 		/* TimeLine에 따른 시간 표시 */
 		JLabel timeSec = new JLabel("00:00");
@@ -146,6 +149,7 @@ public class playFrame extends JPanel{
 		randomBtn.setVerticalAlignment(SwingConstants.CENTER);
 		randomBtn.setHorizontalAlignment(SwingConstants.CENTER);
 		randomBtn.addMouseListener(new playFrameAction.randomBtnAction());
+		randomBtn.setBackground(Color.white);
 		
 		/* 음소거 버튼 */
 		JButton muteBtn = new JButton();
@@ -154,6 +158,7 @@ public class playFrame extends JPanel{
 		muteBtn.setBorderPainted(false);
 		muteBtn.setHorizontalAlignment(SwingConstants.CENTER);
 		muteBtn.addMouseListener(new playFrameAction.muteAction());
+		muteBtn.setBackground(Color.white);
 		
 		/* 스피커(불륨 최대) 버튼 */
 		JButton speakerBtn = new JButton();
@@ -162,6 +167,7 @@ public class playFrame extends JPanel{
 		speakerBtn.setBorderPainted(false);
 		speakerBtn.setHorizontalAlignment(SwingConstants.CENTER);
 		speakerBtn.addMouseListener(new playFrameAction.speakerAction());
+		speakerBtn.setBackground(Color.white);
 		
 		
 		controlPanel.setLayout(null);

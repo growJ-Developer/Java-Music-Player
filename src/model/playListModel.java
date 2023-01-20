@@ -49,7 +49,8 @@ public class playListModel extends DefaultListModel{
 		String musicName = data.getMusicName();
 		if(data.getArtist() != null && !data.getArtist().equals("")) {
 			musicName = musicName + " - " + data.getArtist();
-		}		
+		}
+				
 		super.insertElementAt(musicName, index);
 	}	
 	

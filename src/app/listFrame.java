@@ -65,6 +65,7 @@ public class listFrame extends JPanel{
 		JButton loadFBtn = new JButton("open");										
 		loadFBtn.setBounds(169, 6, 75, 29);
 		loadFBtn.addMouseListener(new listFrameAction.playListFromDiskListener());
+		loadFBtn.setBackground(Color.white);
 		
 		/* PLAY_LIST에 스크롤을 추가합니다 */
 		JScrollPane listScroll = new JScrollPane(musicList);
