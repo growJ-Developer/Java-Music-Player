@@ -6,7 +6,7 @@
 <br>
 
 ### 📆 개발 기간
-* 2021년 11월 1일 ~ 2022년 12월 13일
+* 2021년 11월 1일 ~ 2022년 11월 13일
 
 #### 🖥️ 개발 환경
  - `Java 18.0(Zulu Java with JavaFX)`, `SqlLite`, `Google Material Design Pack`, `mp3spi`, `Jlayer`, `JAudioTagger`
